@@ -8,8 +8,9 @@ Kullanim:
     python convert_dataset.py Pol1.xlsx pol1 "Polonya 1. Lig - 2025/26"
     python convert_dataset.py Tur1.xlsx tur1 "Turkiye 1. Lig - 2025/26"
 
-Uretilen dosyalar site/data/ klasorune yazilir ve site/data/manifest.json
-otomatik guncellenir (ayni id varsa uzerine yazar, yoksa listeye ekler).
+Bu dosyayi index.html ile AYNI klasorde tut. Uretilen dosyalar, bu dosyanin
+yaninda yer alan data/ klasorune yazilir ve data/manifest.json otomatik
+guncellenir (ayni id varsa uzerine yazar, yoksa listeye ekler).
 """
 import sys, json, gzip, os
 import pandas as pd

@@ -8,5 +8,10 @@
     "id": "por2",
     "label": "Portekiz 2. Lig - 2025/26",
     "file": "data/por2.json.gz"
+  },
+  {
+    "id": "italy2",
+    "label": "İtalya 2. Lig - 2025/26",
+    "file": "data/italy2.json.gz"
   }
 ]

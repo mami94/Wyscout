@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="tr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SKOR KARTI — Oyuncu Analiz Platformu</title>
+<title>SCORE CARD — Player Analysis Platform</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -302,22 +302,22 @@
 
   <header class="top">
     <div class="brand">
-      <div class="brand-mark">SK</div>
+      <div class="brand-mark">SC</div>
       <div>
-        <h1>Skor Kartı</h1>
-        <p>Bileşik performans skorları · pozisyona göre ağırlıklandırılmış</p>
+        <h1>Score Card</h1>
+        <p>Composite performance scores · weighted by position</p>
       </div>
     </div>
     <div class="dataset-picker">
-      <label for="datasetSelect">Veri Seti</label>
+      <label for="datasetSelect">Dataset</label>
       <select id="datasetSelect"></select>
     </div>
   </header>
 
   <nav class="tabs">
-    <button data-page="profile" class="active" type="button">Oyuncu Profili</button>
-    <button data-page="compare" type="button">Karşılaştırma</button>
-    <button data-page="scatter" type="button">Dağılım Grafiği</button>
+    <button data-page="profile" class="active" type="button">Player Profile</button>
+    <button data-page="compare" type="button">Comparison</button>
+    <button data-page="scatter" type="button">Scatter Plot</button>
   </nav>
 
   <div class="meta-row" id="metaRow"></div>
@@ -325,31 +325,31 @@
   <!-- ============ PAGE 1: PROFILE ============ -->
   <section class="page active" id="page-profile">
     <div class="field profile-search">
-      <label for="profileInput">Oyuncu Ara</label>
-      <input id="profileInput" list="playerListProfile" placeholder="isim yazın…" autocomplete="off">
+      <label for="profileInput">Search Player</label>
+      <input id="profileInput" list="playerListProfile" placeholder="type a name…" autocomplete="off">
       <datalist id="playerListProfile"></datalist>
     </div>
 
     <div id="profileHolder">
-      <div class="profile-card"><div class="empty-state">Profilini görmek istediğin oyuncunun ismini yaz.</div></div>
+      <div class="profile-card"><div class="empty-state">Type the name of the player whose profile you want to see.</div></div>
     </div>
   </section>
 
   <!-- ============ PAGE 2: COMPARE ============ -->
   <section class="page" id="page-compare">
     <div class="controls">
-      <div class="mode-toggle" role="tablist" aria-label="Karşılaştırma modu">
-        <button id="modeGroupBtn" class="active" type="button">Oyuncu vs Pozisyon Ort.</button>
-        <button id="modePlayerBtn" type="button">Oyuncu vs Oyuncu</button>
+      <div class="mode-toggle" role="tablist" aria-label="Comparison mode">
+        <button id="modeGroupBtn" class="active" type="button">Player vs Position Avg.</button>
+        <button id="modePlayerBtn" type="button">Player vs Player</button>
       </div>
       <div class="field">
-        <label for="player1Input">Oyuncu</label>
-        <input id="player1Input" list="playerList1" placeholder="isim yazın…" autocomplete="off">
+        <label for="player1Input">Player</label>
+        <input id="player1Input" list="playerList1" placeholder="type a name…" autocomplete="off">
         <datalist id="playerList1"></datalist>
       </div>
       <div class="field p2" id="player2Field">
-        <label for="player2Input">Karşılaştırılan Oyuncu</label>
-        <input id="player2Input" list="playerList2" placeholder="isim yazın…" autocomplete="off">
+        <label for="player2Input">Compared Player</label>
+        <input id="player2Input" list="playerList2" placeholder="type a name…" autocomplete="off">
         <datalist id="playerList2"></datalist>
       </div>
     </div>
@@ -358,14 +358,14 @@
       <div class="pizza-title" id="pizzaTitle">—</div>
       <div class="pizza-sub" id="pizzaSub"></div>
       <div class="legend" id="legend"></div>
-      <div id="pizzaHolder"><div class="empty-pizza">Bir oyuncu seçin</div></div>
+      <div id="pizzaHolder"><div class="empty-pizza">Select a player</div></div>
     </div>
 
     <div class="table-head">
-      <h2>Skor Tablosu</h2>
+      <h2>Score Table</h2>
       <div class="table-tools">
-        <input id="tableSearch" placeholder="oyuncu / takım ara…" />
-        <select id="posFilter"><option value="">Tüm pozisyonlar</option></select>
+        <input id="tableSearch" placeholder="search player / team…" />
+        <select id="posFilter"><option value="">All positions</option></select>
       </div>
     </div>
 
@@ -380,35 +380,35 @@
   <!-- ============ PAGE 3: SCATTER ============ -->
   <section class="page" id="page-scatter">
     <div class="field" style="max-width:640px; margin-bottom:18px;">
-      <label>Ligler <span style="text-transform:none; letter-spacing:0; color:var(--text-faint);">(birden fazla seçilebilir)</span></label>
+      <label>Leagues <span style="text-transform:none; letter-spacing:0; color:var(--text-faint);">(multiple selectable)</span></label>
       <div class="league-checks" id="leagueChecks"></div>
     </div>
 
     <div class="scatter-controls">
       <div class="field">
-        <label for="scatterXSelect">X Ekseni</label>
+        <label for="scatterXSelect">X Axis</label>
         <select id="scatterXSelect"></select>
       </div>
       <div class="field">
-        <label for="scatterYSelect">Y Ekseni</label>
+        <label for="scatterYSelect">Y Axis</label>
         <select id="scatterYSelect"></select>
       </div>
       <div class="field">
-        <label for="scatterPosFilter">Pozisyon</label>
-        <select id="scatterPosFilter"><option value="">Tüm pozisyonlar</option></select>
+        <label for="scatterPosFilter">Position</label>
+        <select id="scatterPosFilter"><option value="">All positions</option></select>
       </div>
       <div class="field">
-        <label for="scatterFootFilter">Ayak</label>
+        <label for="scatterFootFilter">Foot</label>
         <select id="scatterFootFilter">
-          <option value="">Tümü</option>
-          <option value="right">Sağ</option>
-          <option value="left">Sol</option>
-          <option value="both">Çift</option>
+          <option value="">All</option>
+          <option value="right">Right</option>
+          <option value="left">Left</option>
+          <option value="both">Both</option>
         </select>
       </div>
       <div class="field">
-        <label for="scatterHighlight">Vurgula</label>
-        <input id="scatterHighlight" list="playerListScatter" placeholder="oyuncu adı…" autocomplete="off">
+        <label for="scatterHighlight">Highlight</label>
+        <input id="scatterHighlight" list="playerListScatter" placeholder="player name…" autocomplete="off">
         <datalist id="playerListScatter"></datalist>
       </div>
     </div>
@@ -422,21 +422,21 @@
     </div>
   </section>
 
-  <footer>Skor Kartı — statik veri, tarayıcıda hesaplanır. Veri seti güncellemesi gzip JSON dosyaları üzerinden yapılır.</footer>
+  <footer>Score Card — static data, computed in the browser. Dataset updates are done via gzip JSON files.</footer>
 </div>
 
 <script>
 const PARAM_LABELS = {
-  DQ:"Defansif Aksiyon", AA:"Hava Topu", BC:"Top Taşıma", PM:"Oyun Kurma",
-  APM:"İleri Oyun Kurma", SI:"Şut Katkısı", CC:"Şans Yaratma", CRS:"Orta", DUE:"İkili Mücadele"
+  DQ:"Defensive Actions", AA:"Aerial Duels", BC:"Ball Carrying", PM:"Playmaking",
+  APM:"Advanced Playmaking", SI:"Shot Involvement", CC:"Chance Creation", CRS:"Crossing", DUE:"Duels"
 };
 const POS_COLORS = {
   CB:'#33A868', FB:'#4FC3F7', DM:'#9575CD', CM:'#E7B23E',
   AM:'#EF6C7A', W:'#4DD0C4', S:'#D3573F', Other:'#8FA398'
 };
 const EXTRA_AXES = {
-  'Age':'Yaş', 'Minutes played':'Dakika', 'Market value':'Piyasa Değeri', 'T':'T Skoru',
-  'Height':'Boy (cm)', 'ContractYear':'Sözleşme Bitiş Yılı'
+  'Age':'Age', 'Minutes played':'Minutes', 'Market value':'Market Value', 'T':'T Score',
+  'Height':'Height (cm)', 'ContractYear':'Contract Expiry Year'
 };
 
 let STATE = {
@@ -543,7 +543,7 @@ function buildMeta(){
   p.forEach(r => posCounts[r['Pos.group']] = (posCounts[r['Pos.group']]||0)+1);
   const meta = document.getElementById('metaRow');
   meta.innerHTML = `
-    <span class="pill"><b>${p.length}</b> oyuncu</span>
+    <span class="pill"><b>${p.length}</b> players</span>
     ${Object.entries(posCounts).map(([k,v])=>`<span class="pill">${k} <b>${v}</b></span>`).join('')}
   `;
 }
@@ -551,7 +551,7 @@ function buildMeta(){
 function buildDatalists(){
   const opts = STATE.players
     .slice()
-    .sort((a,b)=> a.Player.localeCompare(b.Player,'tr'))
+    .sort((a,b)=> a.Player.localeCompare(b.Player,'en'))
     .map(r => `<option value="${escapeAttr(r.Player)}">`).join('');
   document.getElementById('playerList1').innerHTML = opts;
   document.getElementById('playerList2').innerHTML = opts;
@@ -562,10 +562,10 @@ function buildDatalists(){
 function buildPosFilter(){
   const groups = [...new Set(STATE.players.map(r=>r['Pos.group']))].sort();
   const sel = document.getElementById('posFilter');
-  sel.innerHTML = '<option value="">Tüm pozisyonlar</option>' + groups.map(g=>`<option value="${g}">${g}</option>`).join('');
+  sel.innerHTML = '<option value="">All positions</option>' + groups.map(g=>`<option value="${g}">${g}</option>`).join('');
   const sel2 = document.getElementById('scatterPosFilter');
   const fixedGroups = ['CB','FB','DM','CM','AM','W','S'];
-  sel2.innerHTML = '<option value="">Tüm pozisyonlar</option>' + fixedGroups.map(g=>`<option value="${g}">${g}</option>`).join('');
+  sel2.innerHTML = '<option value="">All positions</option>' + fixedGroups.map(g=>`<option value="${g}">${g}</option>`).join('');
 }
 
 function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
@@ -573,7 +573,7 @@ function escapeHtml(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<
 function findPlayer(name){ return STATE.players.find(r => r.Player === name); }
 function fmtMoney(v){
   if(!v) return '—';
-  return new Intl.NumberFormat('tr-TR').format(v) + ' €';
+  return new Intl.NumberFormat('en-US').format(v) + ' €';
 }
 
 /* ---------------- TABS ---------------- */
@@ -618,7 +618,7 @@ document.getElementById('scatterHighlight').addEventListener('input', e => {
   renderScatter();
 });
 
-/* ---------------- PIZZA CHART (büyütülmüş) ---------------- */
+/* ---------------- PIZZA CHART (enlarged) ---------------- */
 function polarPoint(cx, cy, r, angleDeg){
   const a = (angleDeg - 90) * Math.PI / 180;
   return [cx + r*Math.cos(a), cy + r*Math.sin(a)];
@@ -701,7 +701,7 @@ function renderPizza(){
   if(!params || !params.length) return;
 
   if(!STATE.p1){
-    holder.innerHTML = '<div class="empty-pizza">Bir oyuncu seçin</div>';
+    holder.innerHTML = '<div class="empty-pizza">Select a player</div>';
     title.textContent = '—'; sub.textContent=''; legend.innerHTML='';
     return;
   }
@@ -715,7 +715,7 @@ function renderPizza(){
       const avg = groupRows.reduce((s,r)=>s+(r[p]||0),0) / groupRows.length;
       return Math.round(avg*10)/10;
     });
-    labelB = `${posGroup} Ortalaması (n=${groupRows.length})`;
+    labelB = `${posGroup} Average (n=${groupRows.length})`;
     title.innerHTML = `${escapeHtml(STATE.p1.Player)} <span class="vs">vs</span> ${labelB}`;
   } else {
     if(!STATE.p2){
@@ -745,8 +745,8 @@ function renderPizza(){
 /* ---------------- TABLE ---------------- */
 function buildTableHead(){
   const cols = [
-    {key:'Player', label:'Oyuncu'}, {key:'Team', label:'Takım'}, {key:'Pos.group', label:'Poz'},
-    {key:'Age', label:'Yaş', num:true}, {key:'Minutes played', label:'Dakika', num:true},
+    {key:'Player', label:'Player'}, {key:'Team', label:'Team'}, {key:'Pos.group', label:'Pos'},
+    {key:'Age', label:'Age', num:true}, {key:'Minutes played', label:'Min', num:true},
     ...STATE.params.map(p => ({key:p, label:p, num:true, title:PARAM_LABELS[p]})),
     {key:'T', label:'T', num:true},
   ];
@@ -772,7 +772,7 @@ function renderTable(){
     const k = STATE.sortKey;
     const va = a[k], vb = b[k];
     if(typeof va === 'number' && typeof vb === 'number') return (va-vb)*STATE.sortDir;
-    return String(va).localeCompare(String(vb),'tr') * STATE.sortDir;
+    return String(va).localeCompare(String(vb),'en') * STATE.sortDir;
   });
 
   document.querySelectorAll('#theadRow th').forEach(th => {
@@ -804,7 +804,7 @@ function renderProfile(){
   const holder = document.getElementById('profileHolder');
   const r = STATE.profilePlayer;
   if(!r){
-    holder.innerHTML = '<div class="profile-card"><div class="empty-state">Profilini görmek istediğin oyuncunun ismini yaz.</div></div>';
+    holder.innerHTML = '<div class="profile-card"><div class="empty-state">Type the name of the player whose profile you want to see.</div></div>';
     return;
   }
   const params = STATE.params;
@@ -835,26 +835,26 @@ function renderProfile(){
           <div class="profile-sub">
             <span>${escapeHtml(r.Team)}</span>
             <span class="pos-tag">${r['Pos.group']}</span>
-            <span>${r.Age} yaş</span>
-            <span>${r.Foot==='left'?'sol ayak':r.Foot==='right'?'sağ ayak':(r.Foot||'')}</span>
+            <span>${r.Age} yrs</span>
+            <span>${r.Foot==='left'?'left foot':r.Foot==='right'?'right foot':(r.Foot||'')}</span>
           </div>
         </div>
         <div class="t-hero">
           <div class="num">${(r.T??0).toFixed(1)}</div>
-          <div class="lbl">T Skoru</div>
+          <div class="lbl">T Score</div>
         </div>
       </div>
 
       <div class="profile-pills">
-        <span class="pill">Dakika <b>${r['Minutes played']}</b></span>
-        <span class="pill">Piyasa Değeri <b>${fmtMoney(r['Market value'])}</b></span>
-        <span class="pill">Sözleşme <b>${r['Contract expires']||'—'}</b></span>
+        <span class="pill">Minutes <b>${r['Minutes played']}</b></span>
+        <span class="pill">Market Value <b>${fmtMoney(r['Market value'])}</b></span>
+        <span class="pill">Contract <b>${r['Contract expires']||'—'}</b></span>
       </div>
 
       <div class="bars">${bars}</div>
       <div class="bars-legend">
-        <span><i class="bar"></i> Oyuncu skoru</span>
-        <span><i class="dot"></i> ${r['Pos.group']} pozisyon ortalaması</span>
+        <span><i class="bar"></i> Player score</span>
+        <span><i class="dot"></i> ${r['Pos.group']} position average</span>
       </div>
     </div>
   `;
@@ -912,10 +912,10 @@ function renderScatter(){
 
   let rows = getMergedScatterPlayers();
   document.getElementById('playerListScatter').innerHTML = rows
-    .slice().sort((a,b)=>a.Player.localeCompare(b.Player,'tr'))
+    .slice().sort((a,b)=>a.Player.localeCompare(b.Player,'en'))
     .map(r => `<option value="${escapeAttr(r.Player)}">`).join('');
 
-  if(!rows.length){ holder.innerHTML = '<div class="empty-state">En az bir lig seçin.</div>'; legendEl.innerHTML=''; return; }
+  if(!rows.length){ holder.innerHTML = '<div class="empty-state">Select at least one league.</div>'; legendEl.innerHTML=''; return; }
 
   if(STATE.scatterPos) rows = rows.filter(r => r['Pos.group'] === STATE.scatterPos);
   if(STATE.scatterFoot) rows = rows.filter(r => (r.Foot||'').toLowerCase() === STATE.scatterFoot);
@@ -923,7 +923,7 @@ function renderScatter(){
   const xKey = STATE.scatterX, yKey = STATE.scatterY;
   rows = rows.filter(r => getAxisValue(r,xKey) !== null && getAxisValue(r,yKey) !== null);
 
-  if(!rows.length){ holder.innerHTML = '<div class="empty-state">Bu filtrelerle veri bulunamadı.</div>'; legendEl.innerHTML=''; return; }
+  if(!rows.length){ holder.innerHTML = '<div class="empty-state">No data found with these filters.</div>'; legendEl.innerHTML=''; return; }
 
   const xs = rows.map(r=>getAxisValue(r,xKey)), ys = rows.map(r=>getAxisValue(r,yKey));
   const xMin = Math.min(...xs), xMax = Math.max(...xs);
@@ -974,7 +974,7 @@ function renderScatter(){
 
   const groupsPresent = [...new Set(rows.map(r=>r['Pos.group']))].sort();
   legendEl.innerHTML = groupsPresent.map(g => `<span><i style="background:${POS_COLORS[g]||POS_COLORS.Other}"></i>${g}</span>`).join('')
-    + (multiLeague ? `<span style="margin-left:12px; color:var(--text-faint);">· ${rows.length} oyuncu, ${STATE.scatterLeagues.length} lig</span>` : '');
+    + (multiLeague ? `<span style="margin-left:12px; color:var(--text-faint);">· ${rows.length} players, ${STATE.scatterLeagues.length} leagues</span>` : '');
 
   const tooltip = document.getElementById('scatterTooltip');
   const wrapEl = document.getElementById('scatterWrap');
@@ -985,10 +985,10 @@ function renderScatter(){
       tooltip.style.left = (e.clientX-rect.left)+'px';
       tooltip.style.top = (e.clientY-rect.top)+'px';
       tooltip.style.opacity = 1;
-      const footTr = r.Foot==='left'?'sol':r.Foot==='right'?'sağ':r.Foot==='both'?'çift':(r.Foot||'—');
+      const footTr = r.Foot==='left'?'left':r.Foot==='right'?'right':r.Foot==='both'?'both':(r.Foot||'—');
       tooltip.innerHTML = `<b>${escapeHtml(r.Player)}</b><br>
         ${escapeHtml(r.Team)} · ${r['Pos.group']}${multiLeague?' · '+escapeHtml(r._league):''}<br>
-        ${r.Age} yaş · ${r.Height||'—'} cm · ${footTr} ayak<br>
+        ${r.Age} y/o · ${r.Height||'—'} cm · ${footTr} foot<br>
         Sözleşme: ${r['Contract expires']||'—'}<br>
         ${escapeHtml(axisLabel(xKey))}: ${fmtAxisVal(getAxisValue(r,xKey))} &nbsp; ${escapeHtml(axisLabel(yKey))}: ${fmtAxisVal(getAxisValue(r,yKey))}`;
     });
