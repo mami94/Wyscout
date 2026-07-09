@@ -1,0 +1,12 @@
+[
+  {
+    "id": "pol1",
+    "label": "Polonya 1. Lig - 2025/26",
+    "file": "data/pol1.json.gz"
+  },
+  {
+    "id": "por2",
+    "label": "Portekiz 2. Lig - 2025/26",
+    "file": "data/por2.json.gz"
+  }
+]
