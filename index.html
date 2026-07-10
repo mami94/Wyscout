@@ -436,7 +436,7 @@ const POS_COLORS = {
 };
 const EXTRA_AXES = {
   'Age':'Age', 'Minutes played':'Minutes', 'Market value':'Market Value', 'T':'T Score',
-  'Height':'Height (cm)', 'ContractYear':'Contract Expiry Year'
+  'Height':'Height (cm)', 'ContractYear':'Contract Expiry Year', 'ValueScore':'Value Score (T/€M)'
 };
 
 let STATE = {
@@ -749,6 +749,7 @@ function buildTableHead(){
     {key:'Age', label:'Age', num:true}, {key:'Minutes played', label:'Min', num:true},
     ...STATE.params.map(p => ({key:p, label:p, num:true, title:PARAM_LABELS[p]})),
     {key:'T', label:'T', num:true},
+    {key:'ValueScore', label:'VAL', num:true, title:'Value Score (T per €1M market value)'},
   ];
   const row = document.getElementById('theadRow');
   row.innerHTML = cols.map(c => `<th data-key="${c.key}" class="${c.num?'num':''}" title="${c.title||''}">${c.label}<span class="arrow"></span></th>`).join('');
@@ -770,7 +771,8 @@ function renderTable(){
 
   rows = rows.slice().sort((a,b) => {
     const k = STATE.sortKey;
-    const va = a[k], vb = b[k];
+    let va = a[k], vb = b[k];
+    if(k === 'ValueScore'){ va = va ?? -1; vb = vb ?? -1; }
     if(typeof va === 'number' && typeof vb === 'number') return (va-vb)*STATE.sortDir;
     return String(va).localeCompare(String(vb),'en') * STATE.sortDir;
   });
@@ -784,6 +786,7 @@ function renderTable(){
   tbody.innerHTML = rows.map(r => {
     const cls = (STATE.p1 && r.Player===STATE.p1.Player) ? 'is-a' : (STATE.p2 && r.Player===STATE.p2.Player) ? 'is-b' : '';
     const paramCells = STATE.params.map(p => `<td class="num">${(r[p]??0).toFixed(1)}</td>`).join('');
+    const valCell = (r.ValueScore===null || r.ValueScore===undefined) ? '—' : r.ValueScore.toFixed(2);
     return `<tr class="${cls}">
       <td class="name">${escapeHtml(r.Player)}</td>
       <td>${escapeHtml(r.Team)}</td>
@@ -792,6 +795,7 @@ function renderTable(){
       <td class="num">${r['Minutes played']}</td>
       ${paramCells}
       <td class="num t-score">${(r.T??0).toFixed(1)}</td>
+      <td class="num">${valCell}</td>
     </tr>`;
   }).join('');
 }
@@ -849,6 +853,7 @@ function renderProfile(){
         <span class="pill">Minutes <b>${r['Minutes played']}</b></span>
         <span class="pill">Market Value <b>${fmtMoney(r['Market value'])}</b></span>
         <span class="pill">Contract <b>${r['Contract expires']||'—'}</b></span>
+        <span class="pill">Value Score <b>${(r.ValueScore===null||r.ValueScore===undefined)?'—':r.ValueScore.toFixed(2)}</b></span>
       </div>
 
       <div class="bars">${bars}</div>

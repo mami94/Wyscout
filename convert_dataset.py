@@ -15,7 +15,7 @@ guncellenir (ayni id varsa uzerine yazar, yoksa listeye ekler).
 import sys, json, gzip, os
 import pandas as pd
 import numpy as np
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import RobustScaler, MinMaxScaler
 
 # Bu dosya site klasorunun icinde durur; veri dosyalari yaninda yer alan data/ klasorune yazilir.
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
@@ -77,6 +77,16 @@ SCORE_OVERRIDES = {
     "J. Kolan": {"PM": 37.3, "DQ": 53.2},
 }
 
+# Farkli liglerin genel seviyesini tek bir katsayiyla T skoruna yansitmak icin.
+# 1.0 = referans seviye. Dataset id'sine (convert_dataset.py'a verdigin 2. parametre,
+# orn. "pol1") gore eslesir. Burada olmayan bir lig icin katsayi otomatik 1.0 kabul edilir.
+# Degerler tahmini/taslak - birlikte netlestirene kadar 1.0 (etkisiz) birakildi.
+LEAGUE_STRENGTH = {
+    "pol1": 1.0,
+    "por2": 1.0,
+    "italy2": 1.0,
+}
+
 
 def classify_position(mp):
     if mp in ['GK']: return 'GK'
@@ -115,20 +125,23 @@ def process(path, key, label, min_minutes=600):
 
     # ---- Oyun suresi cezasi: her pozisyon grubu icinde 5'e bolup (quintile)
     # az oynayanlari kademeli olarak cezalandiriyoruz. Ust %20 tam puan alir,
-    # alt %20 sadece 0.35 carpanla degerlendirilir.
+    # alt %20 0.50 carpanla degerlendirilir (once 0.35'ti, cok sertti).
     def playtime_multiplier(minutes_series):
         q20, q40, q60, q80 = minutes_series.quantile([0.2, 0.4, 0.6, 0.8])
         def mult(m):
             if m >= q80: return 1.00
-            if m >= q60: return 0.90
-            if m >= q40: return 0.75
-            if m >= q20: return 0.55
-            return 0.35
+            if m >= q60: return 0.95
+            if m >= q40: return 0.85
+            if m >= q20: return 0.70
+            return 0.50
         return minutes_series.apply(mult)
 
     data['PlayTimeMult'] = data.groupby('Pos.group')['Minutes played'].transform(playtime_multiplier)
 
-    scaler = StandardScaler()
+    # RobustScaler: medyan ve IQR kullanir, StandardScaler'in aksine
+    # xG / crosses / smart passes gibi sagdan carpik, aykiri-degerli
+    # metriklerde tek bir ekstrem performans skoru bozmaz.
+    scaler = RobustScaler()
     numeric_columns = data.select_dtypes(include=[np.number]).columns
     exclude_cols = ['Age', 'Market value', 'Minutes played', 'PlayTimeMult', 'Height']
     numeric_columns = [c for c in numeric_columns if c not in exclude_cols]
@@ -142,16 +155,31 @@ def process(path, key, label, min_minutes=600):
             lambda row: sum(row[m] * w for m, w in valid.items()) / tw, axis=1)
 
     data_with_scores = pd.concat([data, pd.DataFrame(category_scores)], axis=1)
-    minmax = MinMaxScaler(feature_range=(0, 100))
-    for score in category_scores.keys():
-        data_with_scores[score] = minmax.fit_transform(data_with_scores[[score]])
 
+    # Alt kategori skorlari (DQ, AA, BC...) artik TUM oyuncu havuzuna gore degil,
+    # her pozisyon grubunun KENDI icinde 0-100'e normalize ediliyor. Boylece bir
+    # CB'nin Crossing skoru wingerlarla degil, diger CB'lerle kiyaslaniyor.
+    def norm_group_minmax(s):
+        if s.max() > s.min():
+            return (s - s.min()) / (s.max() - s.min()) * 100
+        return pd.Series(50.0, index=s.index)
+
+    for score in category_scores.keys():
+        data_with_scores[score] = data_with_scores.groupby('Pos.group')[score].transform(norm_group_minmax)
+
+    # ---- Final skor: agirlikli ARITMETIK ortalama yerine agirlikli GEOMETRIK
+    # ortalama kullaniyoruz. Aritmetik ortalamada tek bir cok guclu kategori,
+    # baska bir kategorideki zayifligi rahatca kapatabiliyordu (orn. 90 + 10 ortalamasi
+    # hala 50). Geometrik ortalamada ayni oyuncu cok daha asagida kalir (sqrt(90*10)=30),
+    # yani "her yonden dengeli olmayan" oyuncular T'de daha fazla cezalandirilir.
+    # score+1 kullanimi log(0) patlamasin diye (0-100 skalada etkisi ihmal edilebilir).
     def calc_T_raw(row):
         pos = row['Pos.group']
         pw = POSITION_CATEGORY_WEIGHTS.get(pos, {c: 1 for c in WEIGHTS})
         tw = sum(pw.values()) or 1
-        s = sum(row.get(f'{c} Score', 0) * pw.get(c, 0) for c in WEIGHTS.keys()) / tw
-        return s * row['PlayTimeMult']
+        log_sum = sum(pw.get(c, 0) * np.log(max(row.get(f'{c} Score', 0), 0) + 1) for c in WEIGHTS.keys())
+        s = np.exp(log_sum / tw) - 1
+        return max(s, 0) * row['PlayTimeMult']
 
     data_with_scores['T_raw'] = data_with_scores.apply(calc_T_raw, axis=1)
 
@@ -165,10 +193,31 @@ def process(path, key, label, min_minutes=600):
 
     data_with_scores['T'] = data_with_scores.groupby('Pos.group')['T_raw'].transform(norm_group)
 
+    # ---- League Strength: farkli liglerin genel seviyesini T'ye uygulanan tek bir
+    # katsayi ile ayarlamak icin ayrilmis alan. LEAGUE_STRENGTH sozlugunde bu
+    # dataset'in "key"ine (orn. "pol1") karsilik gelen katsayi varsa T bununla
+    # carpilir (0-100 pozisyon ici normalizasyondan SONRA uygulanir, boylece bir
+    # ligin en iyisi hala kendi ligi icinde 100'du ama farkli ligler karsilastirildiginda
+    # gercek seviyeleri yansitir). Katsayi belirtilmemisse 1.0 (degisiklik yok) kullanilir.
+    league_strength = LEAGUE_STRENGTH.get(key, 1.0)
+    data_with_scores['T'] = (data_with_scores['T'] * league_strength).round(2)
+
+    # ---- Value Score: T skorunu piyasa degerine (milyon euro basina) bolerek
+    # "parasina gore performans" olcusu veriyor. Piyasa degeri 0/bilinmiyorsa None.
+    def calc_value_score(row):
+        mv = row['Market value']
+        if not mv or mv <= 0:
+            return None
+        return round(row['T'] / (mv / 1_000_000), 2)
+
+    data_with_scores['ValueScore'] = data_with_scores.apply(calc_value_score, axis=1)
+
     out = data_with_scores[['Player', 'Team', 'Pos.group', 'Age', 'Contract expires', 'Market value',
-                             'Minutes played', 'Foot', 'Height'] + list(category_scores.keys()) + ['T']].copy()
+                             'Minutes played', 'Foot', 'Height'] + list(category_scores.keys()) + ['T', 'ValueScore']].copy()
     out.rename(columns=RENAME, inplace=True)
-    out = out.round(1)
+    out['T'] = out['T'].round(1)
+    out['ValueScore'] = out['ValueScore'].round(2)
+    out[list(RENAME.values())] = out[list(RENAME.values())].round(1)
     out = out.sort_values(by='T', ascending=False)
 
     def fix_team(row):
@@ -185,6 +234,9 @@ def process(path, key, label, min_minutes=600):
     out['Height'] = out['Height'].fillna(0).astype(int)
 
     records = out.to_dict(orient='records')
+    for rec in records:
+        if isinstance(rec.get('ValueScore'), float) and np.isnan(rec['ValueScore']):
+            rec['ValueScore'] = None
 
     if SCORE_OVERRIDES:
         for rec in records:
