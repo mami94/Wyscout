@@ -634,9 +634,11 @@ function wedgePath(cx, cy, r0, r, a0, a1){
 }
 
 function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, colorB){
-  const size = 920;
+  const size = 980;
   const cx = size/2, cy = size/2;
   const R = 350, r0 = 26;
+  const lineEnd = R + 80;
+  const outerRing = R + 95;
   const n = paramsList.length;
   const sector = 360/n;
   const rings = [25,50,75,100];
@@ -648,9 +650,12 @@ function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, col
     svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
   });
 
+  // Radarin tamamini saran dis cerceve
+  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>`;
+
   for(let i=0;i<n;i++){
     const a = i*sector;
-    const [x,y] = polarPoint(cx,cy,R,a);
+    const [x,y] = polarPoint(cx,cy,lineEnd,a);
     svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>`;
   }
 
@@ -666,7 +671,7 @@ function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, col
       svg += `<path d="${wedgePath(cx,cy,r0,rB,mid,a1)}" fill="${colorB}" fill-opacity="0.92" stroke="${colorB}" stroke-width="1"/>`;
     }
 
-    const [lx,ly] = polarPoint(cx,cy,R+52,mid);
+    const [lx,ly] = polarPoint(cx,cy,R+55,mid);
     const anchor = (mid>10 && mid<170) ? 'start' : (mid>190 && mid<350) ? 'end' : 'middle';
     svg += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="middle"
               font-family="Barlow Condensed, sans-serif" font-size="24" font-weight="700" fill="#EDF2EE">${paramsList[i]}</text>`;
