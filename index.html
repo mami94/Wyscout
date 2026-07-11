@@ -637,17 +637,20 @@ function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, col
   const size = 980;
   const cx = size/2, cy = size/2;
   const R = 350, r0 = 26;
-  const lineEnd = R + 80;
   const outerRing = R + 95;
+  const lineEnd = outerRing;
   const n = paramsList.length;
   const sector = 360/n;
   const rings = [25,50,75,100];
 
   let svg = `<svg class="pizza" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
 
+  // Radarin arka planini sitenin genel arka planindan ayiran disk
+  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing + 14}" fill="#131F19"/>`;
+
   rings.forEach(v => {
     const r = r0 + (v/100)*(R-r0);
-    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
   });
 
   // Radarin tamamini saran dis cerceve
