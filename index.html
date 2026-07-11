@@ -645,21 +645,21 @@ function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, col
 
   let svg = `<svg class="pizza" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">`;
 
-  // Radarin arka planini sitenin genel arka planindan ayiran disk
-  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing + 14}" fill="#131F19"/>`;
+  // Radarin arka planini sitenin genel arka planindan ayiran disk (acik pembe-gri)
+  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing + 14}" fill="#D9CDD1"/>`;
 
   rings.forEach(v => {
     const r = r0 + (v/100)*(R-r0);
-    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>`;
+    svg += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="rgba(40,28,32,0.18)" stroke-width="1"/>`;
   });
 
   // Radarin tamamini saran dis cerceve
-  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing}" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>`;
+  svg += `<circle cx="${cx}" cy="${cy}" r="${outerRing}" fill="none" stroke="rgba(40,28,32,0.4)" stroke-width="1.5"/>`;
 
   for(let i=0;i<n;i++){
     const a = i*sector;
     const [x,y] = polarPoint(cx,cy,lineEnd,a);
-    svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>`;
+    svg += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="rgba(40,28,32,0.5)" stroke-width="1.5"/>`;
   }
 
   for(let i=0;i<n;i++){
@@ -677,7 +677,7 @@ function buildPizzaSVG(paramsList, valuesA, valuesB, labelA, labelB, colorA, col
     const [lx,ly] = polarPoint(cx,cy,R+55,mid);
     const anchor = (mid>10 && mid<170) ? 'start' : (mid>190 && mid<350) ? 'end' : 'middle';
     svg += `<text x="${lx}" y="${ly}" text-anchor="${anchor}" dominant-baseline="middle"
-              font-family="Barlow Condensed, sans-serif" font-size="24" font-weight="700" fill="#EDF2EE">${paramsList[i]}</text>`;
+              font-family="Barlow Condensed, sans-serif" font-size="24" font-weight="700" fill="#2B2024">${paramsList[i]}</text>`;
 
     const [vxA,vyA] = polarPoint(cx,cy, r0 + (Math.max(10,valuesA[i]??0)/100)*(R-r0) , a0 + sector*0.25);
     svg += badge(vxA,vyA, (valuesA[i]??0).toFixed(1), colorA);
