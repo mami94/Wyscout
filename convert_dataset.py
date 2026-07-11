@@ -85,6 +85,17 @@ LEAGUE_STRENGTH = {
     "pol1": 1.0,
     "por2": 1.0,
     "italy2": 1.0,
+    "greece1": 1.0,
+    "scotland1": 1.0,
+    "tunisia1": 1.0,
+    "morocco1": 1.0,
+    "egypt1": 1.0,
+    "france3": 1.0,
+    "germany3": 1.0,
+    "cyprus1": 1.0,
+    "hungary1": 1.0,
+    "georgia1": 1.0,
+    "bulgaria1": 1.0,
 }
 
 
