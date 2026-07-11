@@ -1,16 +1,72 @@
 [
-  { "id": "pol1", "label": "Poland 1st Division - 2025/26", "file": "data/pol1.json.gz" },
-  { "id": "por2", "label": "Portugal 2nd Division - 2025/26", "file": "data/por2.json.gz" },
-  { "id": "italy2", "label": "Italy 2nd Division - 2025/26", "file": "data/italy2.json.gz" },
-  { "id": "greece1", "label": "Greece 1st Division - 2025/26", "file": "data/greece1.json.gz" },
-  { "id": "scotland1", "label": "Scotland 1st Division - 2025/26", "file": "data/scotland1.json.gz" },
-  { "id": "tunisia1", "label": "Tunisia 1st Division - 2025/26", "file": "data/tunisia1.json.gz" },
-  { "id": "morocco1", "label": "Morocco 1st Division - 2025/26", "file": "data/morocco1.json.gz" },
-  { "id": "egypt1", "label": "Egypt 1st Division - 2025/26", "file": "data/egypt1.json.gz" },
-  { "id": "france3", "label": "France 3rd Division - 2025/26", "file": "data/france3.json.gz" },
-  { "id": "germany3", "label": "Germany 3rd Division - 2025/26", "file": "data/germany3.json.gz" },
-  { "id": "cyprus1", "label": "Cyprus 1st Division - 2025/26", "file": "data/cyprus1.json.gz" },
-  { "id": "hungary1", "label": "Hungary 1st Division - 2025/26", "file": "data/hungary1.json.gz" },
-  { "id": "georgia1", "label": "Georgia 1st Division - 2025/26", "file": "data/georgia1.json.gz" },
-  { "id": "bulgaria1", "label": "Bulgaria 1st Division - 2025/26", "file": "data/bulgaria1.json.gz" }
+  {
+    "id": "pol1",
+    "label": "Poland 1st Division - 2025/26",
+    "file": "data/pol1.json.gz"
+  },
+  {
+    "id": "por2",
+    "label": "Portugal 2nd Division - 2025/26",
+    "file": "data/por2.json.gz"
+  },
+  {
+    "id": "greece1",
+    "label": "Greece 1st Division - 2025/26",
+    "file": "data/greece1.json.gz"
+  },
+  {
+    "id": "scotland1",
+    "label": "Scotland 1st Division - 2025/26",
+    "file": "data/scotland1.json.gz"
+  },
+  {
+    "id": "tunisia1",
+    "label": "Tunisia 1st Division - 2025/26",
+    "file": "data/tunisia1.json.gz"
+  },
+  {
+    "id": "morocco1",
+    "label": "Morocco 1st Division - 2025/26",
+    "file": "data/morocco1.json.gz"
+  },
+  {
+    "id": "egypt1",
+    "label": "Egypt 1st Division - 2025/26",
+    "file": "data/egypt1.json.gz"
+  },
+  {
+    "id": "france3",
+    "label": "France 3rd Division - 2025/26",
+    "file": "data/france3.json.gz"
+  },
+  {
+    "id": "germany3",
+    "label": "Germany 3rd Division - 2025/26",
+    "file": "data/germany3.json.gz"
+  },
+  {
+    "id": "cyprus1",
+    "label": "Cyprus 1st Division - 2025/26",
+    "file": "data/cyprus1.json.gz"
+  },
+  {
+    "id": "hungary1",
+    "label": "Hungary 1st Division - 2025/26",
+    "file": "data/hungary1.json.gz"
+  },
+  {
+    "id": "georgia1",
+    "label": "Georgia 1st Division - 2025/26",
+    "file": "data/georgia1.json.gz"
+  },
+  {
+    "id": "bulgaria1",
+    "label": "Bulgaria 1st Division - 2025/26",
+    "file": "data/bulgaria1.json.gz"
+  },
+  {
+    "id": "italy2",
+    "label": "Italy 2nd Division - 2025/26",
+    "file": "data/italy2.json.gz"
+  }
 ]
