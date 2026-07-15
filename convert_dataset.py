@@ -96,6 +96,7 @@ LEAGUE_STRENGTH = {
     "hungary1": 1.0,
     "georgia1": 1.0,
     "bulgaria1": 1.0,
+    "korea1": 1.0,
 }
 
 

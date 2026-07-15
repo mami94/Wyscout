@@ -68,5 +68,10 @@
     "id": "italy2",
     "label": "Italy 2nd Division - 2025/26",
     "file": "data/italy2.json.gz"
+  },
+  {
+    "id": "korea1",
+    "label": "South Korea 1st Division - 2025/26",
+    "file": "data/korea1.json.gz"
   }
 ]
