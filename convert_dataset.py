@@ -97,7 +97,138 @@ LEAGUE_STRENGTH = {
     "georgia1": 1.0,
     "bulgaria1": 1.0,
     "korea1": 1.0,
+    "slovenia1": 1.0,
+    "slovakia1": 1.0,
+    "chile1": 1.0,
+    "ecuador1": 1.0,
+    "uruguay1": 1.0,
 }
+
+
+def _foot_missing(f):
+    if pd.isna(f): return True
+    s = str(f).strip().lower()
+    return s in ('', 'unknown', 'nan', '0')
+
+
+def _height_compat(h1, h2):
+    h1 = 0 if pd.isna(h1) else h1
+    h2 = 0 if pd.isna(h2) else h2
+    if h1 > 0 and h2 > 0 and h1 != h2:
+        return False
+    return True
+
+
+def _age_compat(a1, a2):
+    if pd.isna(a1) or pd.isna(a2):
+        return True
+    return abs(a1 - a2) <= 1
+
+
+def _foot_compat(f1, f2):
+    if _foot_missing(f1) or _foot_missing(f2):
+        return True
+    return str(f1).strip().lower() == str(f2).strip().lower()
+
+
+def merge_duplicate_players(raw):
+    """
+    Ayni isimli birden fazla satiri, GERCEKTEN ayni oyuncu oldugunu dusundugumuzde
+    (boy celismiyor, yas farki <=1, ayak celismiyor) TEK satirda birlestirir.
+    Isim ayni ama boy/yas/ayak celisiyorsa (orn. "Bruno Silva" gibi yaygin isim
+    tasiyan farkli oyuncular) AYRI birakir - yanlislikla farkli kisileri
+    birlestirmemek icin.
+    """
+    per90_cols = [c for c in raw.columns if 'per 90' in c]
+    pct_cols = [c for c in raw.columns if c.strip().endswith('%')]
+    avg_cols = [c for c in raw.columns if c.strip().lower().startswith('average') and c not in per90_cols]
+    weighted_cols = list(set(per90_cols + pct_cols + avg_cols))
+
+    sum_cols = ['Matches played', 'Minutes played', 'Goals', 'xG', 'Assists', 'xA',
+                'Yellow cards', 'Red cards', 'Non-penalty goals', 'Head goals', 'Shots',
+                'Conceded goals', 'Shots against', 'Clean sheets', 'xG against',
+                'Prevented goals', 'Penalties taken', 'PAdj Sliding tackles', 'PAdj Interceptions']
+    sum_cols = [c for c in sum_cols if c in raw.columns]
+
+    bio_cols = ['Age', 'Market value', 'Contract expires', 'Birth country', 'Passport country',
+                'Foot', 'Height', 'Weight', 'On loan', 'Position', 'Team']
+    bio_cols = [c for c in bio_cols if c in raw.columns]
+
+    merged_rows = []
+    merge_log = []
+    skip_log = []
+
+    for name, group in raw.groupby('Player', sort=False):
+        if len(group) == 1:
+            merged_rows.append(group.iloc[0])
+            continue
+
+        idxs = list(group.index)
+        parent = {i: i for i in idxs}
+        def find(x):
+            while parent[x] != x:
+                x = parent[x]
+            return x
+        def union(a, b):
+            ra, rb = find(a), find(b)
+            if ra != rb: parent[ra] = rb
+
+        for i in range(len(idxs)):
+            for j in range(i+1, len(idxs)):
+                a, b = raw.loc[idxs[i]], raw.loc[idxs[j]]
+                if (_height_compat(a.get('Height'), b.get('Height')) and
+                    _age_compat(a.get('Age'), b.get('Age')) and
+                    _foot_compat(a.get('Foot'), b.get('Foot'))):
+                    union(idxs[i], idxs[j])
+
+        clusters = {}
+        for i in idxs:
+            clusters.setdefault(find(i), []).append(i)
+
+        for cluster_idxs in clusters.values():
+            if len(cluster_idxs) == 1:
+                merged_rows.append(raw.loc[cluster_idxs[0]])
+                continue
+
+            rows = raw.loc[cluster_idxs].copy()
+            rows = rows.sort_values('Minutes played', ascending=False)
+            primary = rows.iloc[0].copy()
+            total_minutes = rows['Minutes played'].fillna(0).sum()
+
+            for c in sum_cols:
+                primary[c] = rows[c].fillna(0).sum()
+            for c in weighted_cols:
+                if c in rows.columns and total_minutes > 0:
+                    w = rows['Minutes played'].fillna(0)
+                    vals = rows[c].fillna(0)
+                    primary[c] = (vals * w).sum() / total_minutes
+            for c in bio_cols:
+                if pd.isna(primary.get(c)) or primary.get(c) in (0, '', 'unknown'):
+                    for _, r in rows.iterrows():
+                        if not pd.isna(r.get(c)) and r.get(c) not in (0, '', 'unknown'):
+                            primary[c] = r.get(c)
+                            break
+
+            teams_in_window = [str(t) for t in rows['Team within selected timeframe'].dropna().unique() if str(t).strip()]
+            if len(teams_in_window) > 1:
+                primary['Team within selected timeframe'] = ' / '.join(teams_in_window)
+            elif teams_in_window:
+                primary['Team within selected timeframe'] = teams_in_window[0]
+
+            merged_rows.append(primary)
+            merge_log.append(f"  - {name}: {len(cluster_idxs)} kayit birlestirildi ({total_minutes:.0f} dk toplam)")
+
+        if len(clusters) > 1:
+            skip_log.append(f"  - {name}: {len(clusters)} farkli oyuncu olarak ayri birakildi (yas/boy/ayak celisiyor)")
+
+    if merge_log:
+        print(f"[merge] {len(merge_log)} oyuncu birlestirildi:")
+        for line in merge_log: print(line)
+    if skip_log:
+        print(f"[merge] {len(skip_log)} isim celismesi ayri birakildi (farkli kisiler):")
+        for line in skip_log: print(line)
+
+    return pd.DataFrame(merged_rows).reset_index(drop=True)
 
 
 def classify_position(mp):
@@ -114,7 +245,9 @@ def classify_position(mp):
 
 def process(path, key, label, min_minutes=600):
     raw = pd.read_excel(path)
+    raw = merge_duplicate_players(raw)
     team_fallback = raw.set_index('Player')['Team within selected timeframe'].to_dict()
+    parent_club = raw.set_index('Player')['Team'].to_dict()
 
     data = raw.fillna(0)
     data['Position'] = data['Position'].astype(str)
@@ -232,12 +365,25 @@ def process(path, key, label, min_minutes=600):
     out[list(RENAME.values())] = out[list(RENAME.values())].round(1)
     out = out.sort_values(by='T', ascending=False)
 
-    def fix_team(row):
-        if row['Team'] in (0, '0', None) or (isinstance(row['Team'], float) and pd.isna(row['Team'])):
-            fb = team_fallback.get(row['Player'])
-            return fb if isinstance(fb, str) and fb.strip() else '—'
-        return row['Team']
-    out['Team'] = out.apply(fix_team, axis=1)
+    def is_blank(v):
+        return v in (0, '0', '', None) or (isinstance(v, float) and pd.isna(v))
+
+    def resolve_team(row):
+        # Asil gosterilecek takim: bu ligde GERCEKTE oynadigi kulup
+        # ("Team within selected timeframe"). "Team" alani cogu zaman
+        # kiralik oyuncularda sahip/ana kulubu (bazen yurt disindan) gosteriyor.
+        within = team_fallback.get(row['Player'])
+        parent = parent_club.get(row['Player'])
+        primary = within if isinstance(within, str) and within.strip() and not is_blank(within) else (
+            parent if isinstance(parent, str) and not is_blank(parent) else '—')
+        on_loan_from = None
+        if (isinstance(parent, str) and not is_blank(parent) and isinstance(within, str)
+                and not is_blank(within) and parent.strip() != within.strip()
+                and '/' not in within):  # birlesmis (transfer) satirlarda loan etiketi gosterme
+            on_loan_from = parent.strip()
+        return pd.Series([primary, on_loan_from])
+
+    out[['Team', 'OnLoanFrom']] = out.apply(resolve_team, axis=1)
 
     out['Contract expires'] = out['Contract expires'].apply(lambda v: '' if (v == 0 or pd.isna(v)) else str(v)[:10])
     out['Market value'] = out['Market value'].fillna(0).astype(int)
@@ -249,6 +395,8 @@ def process(path, key, label, min_minutes=600):
     for rec in records:
         if isinstance(rec.get('ValueScore'), float) and np.isnan(rec['ValueScore']):
             rec['ValueScore'] = None
+        if rec.get('OnLoanFrom') is None or (isinstance(rec.get('OnLoanFrom'), float) and np.isnan(rec['OnLoanFrom'])):
+            rec['OnLoanFrom'] = None
 
     if SCORE_OVERRIDES:
         for rec in records:

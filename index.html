@@ -209,6 +209,10 @@
     font-family:'Inter'; font-size:10.5px; font-weight:700; padding:2px 7px; border-radius:5px;
     background:var(--surface-2); color:var(--text-dim); letter-spacing:0.4px;
   }
+  .loan-badge{
+    font-size:10.5px; font-weight:600; padding:2px 8px; border-radius:5px;
+    background:rgba(231,178,62,0.14); color:var(--amber); border:1px solid rgba(231,178,62,0.3);
+  }
   .t-score{ font-weight:700; color:var(--pitch); }
 
   /* ---------- PROFILE PAGE ---------- */
@@ -263,6 +267,16 @@
   .bars-legend i.bar{ width:14px; height:8px; border-radius:3px; background:var(--pitch); display:inline-block;}
 
   /* ---------- SCATTER PAGE ---------- */
+  .league-panel{ display:flex; flex-direction:column; gap:10px; }
+  .league-summary{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    background:var(--surface); border:1px solid var(--line); border-radius:9px;
+    padding:11px 15px; font-size:12.5px; font-family:'Inter'; color:var(--text);
+    cursor:pointer; width:100%; text-align:left;
+  }
+  .league-summary:hover{ border-color:var(--pitch); }
+  .league-summary .chev{ color:var(--text-faint); transition:transform .15s; font-size:11px; }
+  .league-summary.open .chev{ transform:rotate(180deg); }
   .league-checks{ display:flex; gap:8px; flex-wrap:wrap; }
   .league-chip{
     display:flex; align-items:center; gap:7px; background:var(--surface); border:1px solid var(--line);
@@ -271,10 +285,53 @@
   }
   .league-chip input{ accent-color:var(--pitch); cursor:pointer; }
   .league-chip.checked{ border-color:var(--pitch); background:rgba(51,168,104,0.12); color:var(--text); }
-  .scatter-controls{
-    display:grid; grid-template-columns: 1fr 1fr 1fr auto; gap:14px; align-items:end; margin-bottom:22px;
+
+  .pos-panel{ position:relative; }
+  .pos-summary{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background:var(--surface); border:1px solid var(--line); border-radius:8px;
+    padding:10px 14px; font-size:14px; font-family:'Inter'; color:var(--text);
+    cursor:pointer; width:100%; text-align:left; white-space:nowrap; overflow:hidden;
   }
-  @media (max-width:820px){ .scatter-controls{ grid-template-columns:1fr 1fr; } }
+  .pos-summary span:first-child{ overflow:hidden; text-overflow:ellipsis; }
+  .pos-summary:hover{ border-color:var(--pitch); }
+  .pos-summary .chev{ color:var(--text-faint); transition:transform .15s; font-size:11px; flex:none; }
+  .pos-summary.open .chev{ transform:rotate(180deg); }
+  .pos-checks{
+    position:absolute; top:calc(100% + 6px); left:0; z-index:20; min-width:190px;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:10px;
+    padding:10px; display:flex; flex-direction:column; gap:4px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.45);
+  }
+  .pos-check-row{
+    display:flex; align-items:center; gap:9px; padding:6px 8px; border-radius:6px;
+    font-size:12.5px; cursor:pointer; user-select:none; transition:background .12s;
+  }
+  .pos-check-row:hover{ background:rgba(255,255,255,0.04); }
+  .pos-check-row input{ accent-color:var(--pitch); cursor:pointer; }
+  .pos-checks-footer{
+    display:flex; justify-content:space-between; margin-top:6px; padding-top:8px;
+    border-top:1px solid var(--line);
+  }
+  .pos-checks-footer button{
+    background:none; border:none; color:var(--pitch); font-size:11.5px; cursor:pointer;
+    font-family:'Inter'; font-weight:600; padding:2px 4px;
+  }
+  .pos-checks-footer button:hover{ text-decoration:underline; }
+
+  .range-pair{
+    display:flex; align-items:center; gap:6px; color:var(--text-faint); font-size:12.5px;
+  }
+  .range-pair input{
+    background:var(--surface); border:1px solid var(--line); color:var(--text);
+    padding:10px 10px; border-radius:8px; font-size:13px; font-family:'Inter'; width:64px;
+  }
+  .table-tools .range-pair input{ padding:8px 8px; width:60px; }
+
+  .scatter-controls{
+    display:grid; grid-template-columns: 1fr 1fr 1fr auto auto; gap:14px; align-items:end; margin-bottom:22px;
+  }
+  @media (max-width:960px){ .scatter-controls{ grid-template-columns:1fr 1fr; } }
   .scatter-card{
     background:linear-gradient(180deg, var(--surface), var(--bg-alt));
     border:1px solid var(--line); border-radius:16px; padding:22px; margin-bottom:20px;
@@ -282,6 +339,9 @@
   svg.scatter{ width:100%; height:auto; display:block; }
   .scatter-dot{ cursor:pointer; transition:r .1s; }
   .scatter-legend{ display:flex; gap:16px; flex-wrap:wrap; margin-top:16px; font-size:11.5px; color:var(--text-dim); }
+  #scatterProfileHolder .profile-card{ margin-top:4px; }
+  #scatterProfileHolder .profile-card{ animation:fadeIn .2s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
   .scatter-legend span{ display:inline-flex; align-items:center; gap:6px; }
   .scatter-legend i{ width:9px; height:9px; border-radius:50%; display:inline-block; }
   .scatter-tooltip{
@@ -366,6 +426,11 @@
       <div class="table-tools">
         <input id="tableSearch" placeholder="search player / team…" />
         <select id="posFilter"><option value="">All positions</option></select>
+        <div class="range-pair">
+          <input id="tableAgeMin" type="number" placeholder="Age min" min="14" max="45">
+          <span>—</span>
+          <input id="tableAgeMax" type="number" placeholder="Age max" min="14" max="45">
+        </div>
       </div>
     </div>
 
@@ -379,9 +444,12 @@
 
   <!-- ============ PAGE 3: SCATTER ============ -->
   <section class="page" id="page-scatter">
-    <div class="field" style="max-width:640px; margin-bottom:18px;">
-      <label>Leagues <span style="text-transform:none; letter-spacing:0; color:var(--text-faint);">(multiple selectable)</span></label>
-      <div class="league-checks" id="leagueChecks"></div>
+    <div class="league-panel" style="max-width:640px; margin-bottom:18px;">
+      <button type="button" class="league-summary" id="leagueSummaryBtn">
+        <span id="leagueSummaryText">Leagues: —</span>
+        <span class="chev" id="leagueChev">▾</span>
+      </button>
+      <div class="league-checks" id="leagueChecks" style="display:none;"></div>
     </div>
 
     <div class="scatter-controls">
@@ -394,8 +462,14 @@
         <select id="scatterYSelect"></select>
       </div>
       <div class="field">
-        <label for="scatterPosFilter">Position</label>
-        <select id="scatterPosFilter"><option value="">All positions</option></select>
+        <label for="scatterPosBtn">Position</label>
+        <div class="pos-panel">
+          <button type="button" class="pos-summary" id="scatterPosBtn">
+            <span id="scatterPosSummaryText">All positions</span>
+            <span class="chev" id="scatterPosChev">▾</span>
+          </button>
+          <div class="pos-checks" id="scatterPosChecks" style="display:none;"></div>
+        </div>
       </div>
       <div class="field">
         <label for="scatterFootFilter">Foot</label>
@@ -405,6 +479,14 @@
           <option value="left">Left</option>
           <option value="both">Both</option>
         </select>
+      </div>
+      <div class="field">
+        <label for="scatterAgeMin">Age</label>
+        <div class="range-pair">
+          <input id="scatterAgeMin" type="number" placeholder="Min" min="14" max="45">
+          <span>—</span>
+          <input id="scatterAgeMax" type="number" placeholder="Max" min="14" max="45">
+        </div>
       </div>
       <div class="field">
         <label for="scatterHighlight">Highlight</label>
@@ -420,6 +502,8 @@
       </div>
       <div class="scatter-legend" id="scatterLegend"></div>
     </div>
+
+    <div id="scatterProfileHolder"></div>
   </section>
 
   <footer>Score Card — static data, computed in the browser. Dataset updates are done via gzip JSON files.</footer>
@@ -454,10 +538,15 @@ let STATE = {
   profilePlayer:null,
   scatterX:'PM',
   scatterY:'DQ',
-  scatterPos:'',
+  scatterPositions:[...['CB','FB','DM','CM','AM','W','S']],
   scatterFoot:'',
+  scatterAgeMin:null,
+  scatterAgeMax:null,
   scatterLeagues:[],
   scatterHighlightPlayer:null,
+  scatterSelectedPlayer:null,
+  tableAgeMin:null,
+  tableAgeMax:null,
 };
 
 async function fetchGz(url){
@@ -476,6 +565,7 @@ async function loadManifest(){
   sel.innerHTML = manifest.map(m => `<option value="${m.file}">${m.label}</option>`).join('');
   sel.addEventListener('change', () => loadDataset(sel.value));
   buildLeagueChecks();
+  buildScatterPosChecks();
   if(manifest.length){ await loadDataset(manifest[0].file); }
 }
 
@@ -492,6 +582,7 @@ async function loadDataset(file){
   STATE.players = payload.players;
   STATE.params = payload.params;
   STATE.p1 = null; STATE.p2 = null; STATE.profilePlayer = null; STATE.scatterHighlightPlayer = null;
+  STATE.scatterSelectedPlayer = null;
   document.getElementById('player1Input').value = '';
   document.getElementById('player2Input').value = '';
   document.getElementById('profileInput').value = '';
@@ -507,6 +598,7 @@ async function loadDataset(file){
   renderPizza();
   renderProfile();
   renderScatter();
+  renderScatterProfile();
 }
 
 function buildLeagueChecks(){
@@ -532,10 +624,34 @@ function buildLeagueChecks(){
       }
       chip.classList.toggle('checked');
       chip.querySelector('input').checked = STATE.scatterLeagues.includes(file);
+      updateLeagueSummary();
       renderScatter();
     });
   });
+  updateLeagueSummary();
 }
+
+function updateLeagueSummary(){
+  const textEl = document.getElementById('leagueSummaryText');
+  if(!textEl) return;
+  const labels = STATE.scatterLeagues
+    .map(f => (STATE.manifest.find(m=>m.file===f)||{}).label)
+    .filter(Boolean);
+  if(!labels.length){ textEl.textContent = 'Leagues: —'; return; }
+  if(labels.length <= 2){ textEl.textContent = `Leagues: ${labels.join(', ')}`; return; }
+  textEl.textContent = `Leagues: ${labels.slice(0,2).join(', ')} +${labels.length-2} more`;
+}
+
+(function wireLeagueSummaryToggle(){
+  const btn = document.getElementById('leagueSummaryBtn');
+  const panel = document.getElementById('leagueChecks');
+  if(!btn || !panel) return;
+  btn.addEventListener('click', () => {
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'flex';
+    btn.classList.toggle('open', !isOpen);
+  });
+})();
 
 function buildMeta(){
   const p = STATE.players;
@@ -559,14 +675,86 @@ function buildDatalists(){
   document.getElementById('playerListScatter').innerHTML = opts;
 }
 
+const FIXED_POS_GROUPS = ['CB','FB','DM','CM','AM','W','S'];
+
 function buildPosFilter(){
   const groups = [...new Set(STATE.players.map(r=>r['Pos.group']))].sort();
   const sel = document.getElementById('posFilter');
   sel.innerHTML = '<option value="">All positions</option>' + groups.map(g=>`<option value="${g}">${g}</option>`).join('');
-  const sel2 = document.getElementById('scatterPosFilter');
-  const fixedGroups = ['CB','FB','DM','CM','AM','W','S'];
-  sel2.innerHTML = '<option value="">All positions</option>' + fixedGroups.map(g=>`<option value="${g}">${g}</option>`).join('');
 }
+
+function buildScatterPosChecks(){
+  const holder = document.getElementById('scatterPosChecks');
+  if(!STATE.scatterPositions.length){ STATE.scatterPositions = [...FIXED_POS_GROUPS]; }
+  holder.innerHTML = FIXED_POS_GROUPS.map(g => {
+    const checked = STATE.scatterPositions.includes(g);
+    return `<label class="pos-check-row" data-pos="${g}">
+      <input type="checkbox" ${checked?'checked':''}> ${g}
+    </label>`;
+  }).join('') + `
+    <div class="pos-checks-footer">
+      <button type="button" id="posSelectAll">All</button>
+      <button type="button" id="posSelectNone">None</button>
+    </div>`;
+
+  holder.querySelectorAll('.pos-check-row').forEach(row => {
+    row.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      const g = row.dataset.pos;
+      const idx = STATE.scatterPositions.indexOf(g);
+      if(idx >= 0){
+        if(STATE.scatterPositions.length > 1) STATE.scatterPositions.splice(idx,1);
+      } else {
+        STATE.scatterPositions.push(g);
+      }
+      row.querySelector('input').checked = STATE.scatterPositions.includes(g);
+      updateScatterPosSummary();
+      renderScatter();
+    });
+  });
+  document.getElementById('posSelectAll').addEventListener('click', (e) => {
+    e.stopPropagation();
+    STATE.scatterPositions = [...FIXED_POS_GROUPS];
+    buildScatterPosChecks();
+    updateScatterPosSummary();
+    renderScatter();
+  });
+  document.getElementById('posSelectNone').addEventListener('click', (e) => {
+    e.stopPropagation();
+    STATE.scatterPositions = [FIXED_POS_GROUPS[0]];
+    buildScatterPosChecks();
+    updateScatterPosSummary();
+    renderScatter();
+  });
+  updateScatterPosSummary();
+}
+
+function updateScatterPosSummary(){
+  const el = document.getElementById('scatterPosSummaryText');
+  if(!el) return;
+  if(STATE.scatterPositions.length === FIXED_POS_GROUPS.length){ el.textContent = 'All positions'; return; }
+  if(STATE.scatterPositions.length <= 3){ el.textContent = STATE.scatterPositions.join(', '); return; }
+  el.textContent = `${STATE.scatterPositions.slice(0,3).join(', ')} +${STATE.scatterPositions.length-3}`;
+}
+
+(function wirePosPanelToggle(){
+  const btn = document.getElementById('scatterPosBtn');
+  const panel = document.getElementById('scatterPosChecks');
+  if(!btn || !panel) return;
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = panel.style.display !== 'none';
+    panel.style.display = isOpen ? 'none' : 'flex';
+    btn.classList.toggle('open', !isOpen);
+  });
+  document.addEventListener('click', (e) => {
+    if(!panel.contains(e.target) && e.target !== btn){
+      panel.style.display = 'none';
+      btn.classList.remove('open');
+    }
+  });
+})();
 
 function escapeAttr(s){ return String(s).replace(/"/g,'&quot;'); }
 function escapeHtml(s){ return String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
@@ -773,6 +961,8 @@ function renderTable(){
   const posFilter = document.getElementById('posFilter').value;
   let rows = STATE.players.filter(r => {
     if(posFilter && r['Pos.group'] !== posFilter) return false;
+    if(STATE.tableAgeMin !== null && r.Age < STATE.tableAgeMin) return false;
+    if(STATE.tableAgeMax !== null && r.Age > STATE.tableAgeMax) return false;
     if(q && !(r.Player.toLowerCase().includes(q) || String(r.Team).toLowerCase().includes(q))) return false;
     return true;
   });
@@ -795,9 +985,12 @@ function renderTable(){
     const cls = (STATE.p1 && r.Player===STATE.p1.Player) ? 'is-a' : (STATE.p2 && r.Player===STATE.p2.Player) ? 'is-b' : '';
     const paramCells = STATE.params.map(p => `<td class="num">${(r[p]??0).toFixed(1)}</td>`).join('');
     const valCell = (r.ValueScore===null || r.ValueScore===undefined) ? '—' : r.ValueScore.toFixed(2);
+    const teamCell = r.OnLoanFrom
+      ? `${escapeHtml(r.Team)} <span title="On loan from ${escapeAttr(r.OnLoanFrom)}" style="color:var(--amber); cursor:help;">⇄</span>`
+      : escapeHtml(r.Team);
     return `<tr class="${cls}">
       <td class="name">${escapeHtml(r.Player)}</td>
-      <td>${escapeHtml(r.Team)}</td>
+      <td>${teamCell}</td>
       <td><span class="pos-tag">${r['Pos.group']}</span></td>
       <td class="num">${r.Age}</td>
       <td class="num">${r['Minutes played']}</td>
@@ -810,17 +1003,12 @@ function renderTable(){
 
 document.getElementById('tableSearch').addEventListener('input', renderTable);
 document.getElementById('posFilter').addEventListener('change', renderTable);
+document.getElementById('tableAgeMin').addEventListener('input', e => { STATE.tableAgeMin = e.target.value===''?null:+e.target.value; renderTable(); });
+document.getElementById('tableAgeMax').addEventListener('input', e => { STATE.tableAgeMax = e.target.value===''?null:+e.target.value; renderTable(); });
 
 /* ---------------- PROFILE PAGE ---------------- */
-function renderProfile(){
-  const holder = document.getElementById('profileHolder');
-  const r = STATE.profilePlayer;
-  if(!r){
-    holder.innerHTML = '<div class="profile-card"><div class="empty-state">Type the name of the player whose profile you want to see.</div></div>';
-    return;
-  }
+function buildProfileCardHTML(r, groupRows, extraClass){
   const params = STATE.params;
-  const groupRows = STATE.players.filter(x => x['Pos.group'] === r['Pos.group']);
   const groupAvg = {};
   params.forEach(p => {
     groupAvg[p] = groupRows.reduce((s,x)=>s+(x[p]||0),0) / groupRows.length;
@@ -839,16 +1027,18 @@ function renderProfile(){
     </div>`;
   }).join('');
 
-  holder.innerHTML = `
-    <div class="profile-card">
+  return `
+    <div class="profile-card ${extraClass||''}">
       <div class="profile-head">
         <div>
           <div class="profile-name">${escapeHtml(r.Player)}</div>
           <div class="profile-sub">
             <span>${escapeHtml(r.Team)}</span>
+            ${r.OnLoanFrom ? `<span class="loan-badge">on loan from ${escapeHtml(r.OnLoanFrom)}</span>` : ''}
             <span class="pos-tag">${r['Pos.group']}</span>
             <span>${r.Age} yrs</span>
             <span>${r.Foot==='left'?'left foot':r.Foot==='right'?'right foot':(r.Foot||'')}</span>
+            ${r._league ? `<span>· ${escapeHtml(r._league)}</span>` : ''}
           </div>
         </div>
         <div class="t-hero">
@@ -873,6 +1063,17 @@ function renderProfile(){
   `;
 }
 
+function renderProfile(){
+  const holder = document.getElementById('profileHolder');
+  const r = STATE.profilePlayer;
+  if(!r){
+    holder.innerHTML = '<div class="profile-card"><div class="empty-state">Type the name of the player whose profile you want to see.</div></div>';
+    return;
+  }
+  const groupRows = STATE.players.filter(x => x['Pos.group'] === r['Pos.group']);
+  holder.innerHTML = buildProfileCardHTML(r, groupRows);
+}
+
 /* ---------------- SCATTER PAGE ---------------- */
 function buildScatterAxes(){
   const options = [...STATE.params.map(p=>({v:p,l:`${p} — ${PARAM_LABELS[p]}`})), ...Object.entries(EXTRA_AXES).map(([v,l])=>({v,l}))];
@@ -886,8 +1087,9 @@ function buildScatterAxes(){
   STATE.scatterX = xSel.value; STATE.scatterY = ySel.value;
   xSel.onchange = () => { STATE.scatterX = xSel.value; renderScatter(); };
   ySel.onchange = () => { STATE.scatterY = ySel.value; renderScatter(); };
-  document.getElementById('scatterPosFilter').onchange = e => { STATE.scatterPos = e.target.value; renderScatter(); };
   document.getElementById('scatterFootFilter').onchange = e => { STATE.scatterFoot = e.target.value; renderScatter(); };
+  document.getElementById('scatterAgeMin').oninput = e => { STATE.scatterAgeMin = e.target.value===''?null:+e.target.value; renderScatter(); };
+  document.getElementById('scatterAgeMax').oninput = e => { STATE.scatterAgeMax = e.target.value===''?null:+e.target.value; renderScatter(); };
 }
 
 function getAxisValue(r, key){
@@ -914,7 +1116,7 @@ function getMergedScatterPlayers(){
     const ds = STATE.datasetCache[file];
     if(!ds) return;
     const leagueLabel = (STATE.manifest.find(m=>m.file===file)||{}).label || ds.label || file;
-    ds.players.forEach(p => out.push(Object.assign({}, p, {_league: leagueLabel})));
+    ds.players.forEach(p => out.push(Object.assign({}, p, {_league: leagueLabel, _file: file})));
   });
   return out;
 }
@@ -930,8 +1132,12 @@ function renderScatter(){
 
   if(!rows.length){ holder.innerHTML = '<div class="empty-state">Select at least one league.</div>'; legendEl.innerHTML=''; return; }
 
-  if(STATE.scatterPos) rows = rows.filter(r => r['Pos.group'] === STATE.scatterPos);
+  if(STATE.scatterPositions.length && STATE.scatterPositions.length < FIXED_POS_GROUPS.length){
+    rows = rows.filter(r => STATE.scatterPositions.includes(r['Pos.group']));
+  }
   if(STATE.scatterFoot) rows = rows.filter(r => (r.Foot||'').toLowerCase() === STATE.scatterFoot);
+  if(STATE.scatterAgeMin !== null) rows = rows.filter(r => r.Age >= STATE.scatterAgeMin);
+  if(STATE.scatterAgeMax !== null) rows = rows.filter(r => r.Age <= STATE.scatterAgeMax);
 
   const xKey = STATE.scatterX, yKey = STATE.scatterY;
   rows = rows.filter(r => getAxisValue(r,xKey) !== null && getAxisValue(r,yKey) !== null);
@@ -1000,13 +1206,28 @@ function renderScatter(){
       tooltip.style.opacity = 1;
       const footTr = r.Foot==='left'?'left':r.Foot==='right'?'right':r.Foot==='both'?'both':(r.Foot||'—');
       tooltip.innerHTML = `<b>${escapeHtml(r.Player)}</b><br>
-        ${escapeHtml(r.Team)} · ${r['Pos.group']}${multiLeague?' · '+escapeHtml(r._league):''}<br>
+        ${escapeHtml(r.Team)}${r.OnLoanFrom?` <span style="color:#E7B23E;">(loan from ${escapeHtml(r.OnLoanFrom)})</span>`:''} · ${r['Pos.group']}${multiLeague?' · '+escapeHtml(r._league):''}<br>
         ${r.Age} y/o · ${r.Height||'—'} cm · ${footTr} foot<br>
-        Sözleşme: ${r['Contract expires']||'—'}<br>
+        Contract: ${r['Contract expires']||'—'}<br>
         ${escapeHtml(axisLabel(xKey))}: ${fmtAxisVal(getAxisValue(r,xKey))} &nbsp; ${escapeHtml(axisLabel(yKey))}: ${fmtAxisVal(getAxisValue(r,yKey))}`;
     });
     dot.addEventListener('mouseleave', () => { tooltip.style.opacity = 0; });
+    dot.addEventListener('click', () => {
+      const r = rows[+dot.dataset.idx];
+      STATE.scatterSelectedPlayer = r;
+      renderScatterProfile();
+    });
   });
+}
+
+function renderScatterProfile(){
+  const holder = document.getElementById('scatterProfileHolder');
+  const r = STATE.scatterSelectedPlayer;
+  if(!r){ holder.innerHTML = ''; return; }
+  const leagueDs = STATE.datasetCache[r._file];
+  const groupRows = leagueDs ? leagueDs.players.filter(x => x['Pos.group'] === r['Pos.group']) : [r];
+  holder.innerHTML = buildProfileCardHTML(r, groupRows, 'scatter-selected-profile');
+  holder.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function fmtAxisVal(v){

@@ -1,5 +1,10 @@
 [
   {
+    "id": "demo",
+    "label": "Demo League - Example Data",
+    "file": "data/demo.json.gz"
+  },
+  {
     "id": "pol1",
     "label": "Poland 1st Division - 2025/26",
     "file": "data/pol1.json.gz"
@@ -73,5 +78,30 @@
     "id": "korea1",
     "label": "South Korea 1st Division - 2025/26",
     "file": "data/korea1.json.gz"
+  },
+  {
+    "id": "slovenia1",
+    "label": "Slovenia 1st Division - 2025/26",
+    "file": "data/slovenia1.json.gz"
+  },
+  {
+    "id": "slovakia1",
+    "label": "Slovakia 1st Division - 2025/26",
+    "file": "data/slovakia1.json.gz"
+  },
+  {
+    "id": "chile1",
+    "label": "Chile 1st Division - 2025/26",
+    "file": "data/chile1.json.gz"
+  },
+  {
+    "id": "ecuador1",
+    "label": "Ecuador 1st Division - 2025/26",
+    "file": "data/ecuador1.json.gz"
+  },
+  {
+    "id": "uruguay1",
+    "label": "Uruguay 1st Division - 2025/26",
+    "file": "data/uruguay1.json.gz"
   }
 ]
