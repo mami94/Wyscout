@@ -103,5 +103,10 @@
     "id": "uruguay1",
     "label": "Uruguay 1st Division - 2025/26",
     "file": "data/uruguay1.json.gz"
+  },
+  {
+    "id": "romania1",
+    "label": "Romania 1st Division - 2025/26",
+    "file": "data/romania1.json.gz"
   }
 ]

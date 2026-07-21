@@ -102,6 +102,7 @@ LEAGUE_STRENGTH = {
     "chile1": 1.0,
     "ecuador1": 1.0,
     "uruguay1": 1.0,
+    "romania1": 1.0,
 }
 
 
