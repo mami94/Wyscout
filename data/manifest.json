@@ -108,5 +108,10 @@
     "id": "romania1",
     "label": "Romania 1st Division - 2025/26",
     "file": "data/romania1.json.gz"
+  },
+  {
+    "id": "israel1",
+    "label": "Israel 1st Division - 2025/26",
+    "file": "data/israel1.json.gz"
   }
 ]
